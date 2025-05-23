@@ -1,5 +1,5 @@
-import {IPermissionRepository} from "../../../../core/domain/repositories/IPermissionRepository.js";
-import {dataSource} from "../data-source/dataSource.js";
+import {IPermissionRepository} from "../../../../../core/domain/repositories/Permission/IPermissionRepository.js";
+import {dataSource} from "../../data-source/dataSource.js";
 
 export class PermissionRepository extends IPermissionRepository {
     async deleteAll() {

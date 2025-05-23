@@ -29,9 +29,9 @@ export class Jwt extends IJwtRepository {
         }
     }
 
-    static validateRefreshToken(refreshToken) {
+    validateRefreshToken(refreshToken) {
         try {
-            return jwt.verify(refreshToken, process.env.JWT_REFRESH_TOKEN);
+            return jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
         } catch {
             return null;
         }

@@ -1,4 +1,4 @@
-import {NotFoundError} from "../../../../infrastructure/interface/errors/ApiError.js";
+import {NotFoundError} from "../../../../../infrastructure/interface/errors/ApiError.js";
 
 export class DeleteUserUseCase {
     constructor(userRepository, tokenRepository) {
@@ -7,7 +7,7 @@ export class DeleteUserUseCase {
     }
 
     async execute(userId) {
-        const existingUser = this.userRepository.findUserById(userId);
+        const existingUser = await this.userRepository.findById(userId);
         if (!existingUser) {
             throw new NotFoundError("User not found", 404);
         }

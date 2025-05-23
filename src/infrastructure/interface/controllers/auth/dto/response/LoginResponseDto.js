@@ -10,10 +10,10 @@ export class LoginResponseDto {
     constructor(model, accessToken) {
         this.name = model.name;
         this.surname = model.surname;
-        this.phoneNumber = model.phone_number;
+        this.phoneNumber = model.phone_number || "";
         this.email = model.email;
         this.role = model.role.name;
-        this.permissions = model.role.permissions.map(permission => permission.description)
+        this.permissions = model.role.permissions.map(permission => permission.description);
         this.accessToken = accessToken;
     }
 }

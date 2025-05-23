@@ -1,4 +1,4 @@
-import {BadRequestError} from "../../../../infrastructure/interface/errors/ApiError.js";
+import {BadRequestError} from "../../../../../infrastructure/interface/errors/ApiError.js";
 
 export class LoginUserUseCase {
     constructor(userRepository, passwordHasher, tokenGenerator, tokenRepository) {
@@ -10,7 +10,6 @@ export class LoginUserUseCase {
 
     async execute(dto) {
         const existingUser = await this.userRepository.findByEmail(dto.email);
-        console.log(existingUser)
         if (!existingUser) {
             throw new BadRequestError("Invalid username or password", 400);
         }
@@ -21,7 +20,9 @@ export class LoginUserUseCase {
         }
 
         const {accessToken, refreshToken} = this.tokenGenerator.generateTokens({
-            role: existingUser.role.name
+            id: existingUser.id,
+            role: existingUser.role.name,
+            permissions: existingUser.role.permissions.map(permission => permission.action)
         });
 
         await this.tokenRepository.saveToken(existingUser.id, refreshToken)

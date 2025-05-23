@@ -1,5 +1,5 @@
-import {ApiError} from "../errors/ApiError.js";
-import {Jwt} from "../../services/jwt/Jwt.js";
+import {ApiError} from "../../errors/ApiError.js";
+import {Jwt} from "../../../services/jwt/Jwt.js";
 
 export default class AuthMiddleware {
     static async authenticate(request, response, next) {

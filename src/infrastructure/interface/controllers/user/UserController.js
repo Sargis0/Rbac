@@ -1,15 +1,26 @@
 import {UserResponseDto} from "./dto/UserResponseDto.js";
-import {UserDeleteResponseDto} from "./dto/UserDeleteResponseDto.js";
+import {DeletedUserResponseDto} from "./dto/DeletedUserResponseDto.js";
 import {UserUpdateResponseDto} from "./dto/UserUpdateResponseDto.js";
 
 export class UserController {
-    constructor(readUserUseCase, deleteUserUseCase, updateUserUseCase, setUserRoleUseCase, forgotPasswordUseCase, resetPasswordUseCase) {
+    constructor(
+        readUserUseCase,
+        deleteUserUseCase,
+        updateUserUseCase,
+        setUserRoleUseCase,
+        forgotPasswordUseCase,
+        resetPasswordUseCase,
+        refreshTokenUseCase,
+        uploadImageUseCase
+    ) {
         this.readUserUseCase = readUserUseCase;
         this.deleteUserUseCase = deleteUserUseCase;
         this.updateUserUseCase = updateUserUseCase;
         this.setUserRoleUseCase = setUserRoleUseCase;
         this.forgotPasswordUseCase = forgotPasswordUseCase;
         this.resetPasswordUseCase = resetPasswordUseCase;
+        this.refreshTokenUseCase = refreshTokenUseCase;
+        this.uploadImageUseCase = uploadImageUseCase;
     }
 
     async findAll(request, response, next) {
@@ -30,7 +41,7 @@ export class UserController {
             return response.status(200).json({
                 success: true,
                 message: "User deleted successfully",
-                user: new UserDeleteResponseDto(deletedUser)
+                user: new DeletedUserResponseDto(deletedUser)
             })
         } catch (error) {
             next(error);
@@ -55,13 +66,6 @@ export class UserController {
             const userId = request.params.id;
             const {role} = request.body;
 
-            if (!role) {
-                return request.status(400).json({
-                    success: false,
-                    message: "Role is required"
-                });
-            }
-
             const updatedUser = await this.setUserRoleUseCase.execute(userId, role);
             response.status(200).json({
                 success: true,
@@ -75,7 +79,7 @@ export class UserController {
     async forgotPassword(request, response, next) {
         try {
             const {email} = request.body;
-            const result = await this.forgotPasswordUseCase.execute(email);
+            await this.forgotPasswordUseCase.execute(email);
             response.status(200).json({
                 success: true,
                 message: "Reset link sent to your email"
@@ -96,6 +100,47 @@ export class UserController {
                 message: result.message
             });
         } catch (error) {
+            next(error);
+        }
+    }
+
+    async refreshToken(request, response, next) {
+        try {
+            const {accessToken, refreshToken} = await this.refreshTokenUseCase.execute(request.body.refreshToken);
+            response.cookie("refreshToken", refreshToken, {
+                maxAge: 7 * 24 * 60 * 60 * 1000,
+                httpOnly: true,
+                secure: true,
+                sameSite: "strict"
+            });
+
+            return response.status(200).json({
+                success: true,
+                accessToken
+            })
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async uploadImage(request, response, next) {
+        try {
+            const {file} = request;
+            const {id} = request.params;
+            if (!file) {
+                return response.status(400).json({
+                    success: false,
+                    message: "No image provided"
+                });
+            }
+
+            const updatedUser = await this.uploadImageUseCase.execute(id, file);
+            return response.status(200).json({
+                success: true,
+                message: "Image uploaded successfully",
+                imageUrl: updatedUser
+            });
+        } catch(error) {
             next(error);
         }
     }

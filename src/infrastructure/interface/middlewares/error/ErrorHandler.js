@@ -1,4 +1,4 @@
-import {ApiError} from "../errors/ApiError.js";
+import {ApiError} from "../../errors/ApiError.js";
 
 export class ErrorHandler {
     static handler(error, request, response, next) {

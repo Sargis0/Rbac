@@ -7,7 +7,7 @@ export class IJwtRepository {
         throw new Error("Method not implemented");
     }
 
-    async validateRefreshToken(refreshToken) {
+    validateRefreshToken(refreshToken) {
         throw new Error("Method not implemented");
     }
 }

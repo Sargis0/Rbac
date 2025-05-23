@@ -1,5 +1,5 @@
-import {IRoleRepository} from "../../../../core/domain/repositories/IRoleRepository.js";
-import {dataSource} from "../data-source/dataSource.js";
+import {IRoleRepository} from "../../../../../core/domain/repositories/role/IRoleRepository.js";
+import {dataSource} from "../../data-source/dataSource.js";
 
 export class RoleRepository extends IRoleRepository {
     constructor() {

@@ -1,6 +1,6 @@
-import {ITokenRepository} from "../../../../core/domain/repositories/token/ITokenRepository.js";
+import {ITokenRepository} from "../../../../../core/domain/repositories/token/ITokenRepository.js";
 
-import {dataSource} from "../data-source/dataSource.js";
+import {dataSource} from "../../data-source/dataSource.js";
 
 export class TokenRepository extends ITokenRepository {
     async saveToken(userId, refreshToken) {
@@ -21,6 +21,15 @@ export class TokenRepository extends ITokenRepository {
         });
 
         return await tokenRepo.save(newToken);
+    }
+
+    async getTokenByUserId(userId) {
+        const repo = dataSource.getRepository("Token");
+
+        return await repo.findOne({
+            where: {user: {id: userId}},
+            relations: ["user"]
+        });
     }
 
     async removeRefreshToken(userId) {

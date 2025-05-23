@@ -1,4 +1,4 @@
-import {BadRequestError, NotFoundError} from "../../../../infrastructure/interface/errors/ApiError.js";
+import {BadRequestError} from "../../../../../infrastructure/interface/errors/ApiError.js";
 
 export class ResetPasswordUseCase {
     constructor(userRepository, passwordHasher) {
@@ -8,8 +8,8 @@ export class ResetPasswordUseCase {
 
     async execute(token, newPassword) {
         const user = await this.userRepository.findByResetToken(token);
-        if (!user) {
-            throw new NotFoundError("Invalid or expired reset token", 404);
+        if (!user || !user.resetTokenExpires || user.resetTokenExpires < new Date()) {
+            throw new BadRequestError("Invalid or expired token");
         }
 
         if (user.resetTokenExpiration < new Date()) {
@@ -17,7 +17,12 @@ export class ResetPasswordUseCase {
         }
 
         const hashedPassword = await this.passwordHasher.hash(newPassword, 10);
-        await this.userRepository.resetPassword(user.id, hashedPassword);
-        return {success: true, message: "Password has been reset successfully"};
+        user.password = hashedPassword;
+        user.resetToken = null;
+        user.resetTokenExpires = null;
+
+        await this.userRepository.save(user);
+
+        return {message: "Password has been reset successfully"};
     }
 }

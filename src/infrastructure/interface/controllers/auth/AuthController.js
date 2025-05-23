@@ -1,18 +1,24 @@
-import {CreateUserDto} from "./dto/CreateUserDto.js";
-import {LoginUserDto} from "./dto/LoginUserDto.js";
-import {LoginResponseDto} from "./dto/LoginResponseDto.js";
+import {CreateUserDto} from "./dto/request/CreateUserDto.js";
+import {LoginUserDto} from "./dto/request/LoginUserDto.js";
+import {LoginResponseDto} from "./dto/response/LoginResponseDto.js";
+import {RegisterResponseDto} from "./dto/response/RegisterResponseDto.js";
 
 class AuthController {
-    constructor(registerUserUseCase, loginUserUseCase) {
+    constructor(registerUserUseCase, loginUserUseCase, logoutUserUseCase) {
         this.registerUserUseCase = registerUserUseCase;
         this.loginUserUseCase = loginUserUseCase;
+        this.logoutUserUseCase = logoutUserUseCase;
     }
 
     async register(request, response, next) {
         try {
             const dto = new CreateUserDto(request.body);
             const user = await this.registerUserUseCase.execute(dto);
-            return response.status(201).json({message: "User created successfully", user})
+            return response.status(201).json({
+                success: true,
+                message: "User created successfully",
+                user: new RegisterResponseDto(user)
+            });
         } catch (error) {
             next(error);
         }
@@ -36,6 +42,26 @@ class AuthController {
             })
         } catch (error) {
             next(error)
+        }
+    }
+
+    async logout(request, response, next) {
+        try {
+            const userId = request.user.id;
+            await this.logoutUserUseCase.execute(userId);
+
+            response.clearCookie("refreshToken", {
+                httpOnly: true,
+                secure: true,
+                sameSite: "strict"
+            });
+
+            return response.status(200).json({
+                success: true,
+                message: "User logged out successfully"
+            });
+        } catch (error) {
+            next(error);
         }
     }
 }

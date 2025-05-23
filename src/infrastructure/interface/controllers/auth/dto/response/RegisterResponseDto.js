@@ -1,4 +1,4 @@
-export class UserDeleteResponseDto {
+export class RegisterResponseDto {
     name;
     surname;
     email;

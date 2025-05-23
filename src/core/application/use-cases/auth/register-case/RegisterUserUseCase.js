@@ -1,7 +1,7 @@
-import {User} from "../../../domain/entities/user/User.js";
-import {BadRequestError} from "../../../../infrastructure/interface/errors/ApiError.js";
+import {User} from "../../../../domain/entities/user/User.js";
+import {BadRequestError} from "../../../../../infrastructure/interface/errors/ApiError.js";
 
-export class RegisterUserUseCases {
+export class RegisterUserUseCase {
     constructor(userRepository, passwordHasher) {
         this.userRepository = userRepository;
         this.passwordHasher = passwordHasher;
@@ -18,8 +18,6 @@ export class RegisterUserUseCases {
             ...dto,
             password: hasedPassword
         });
-
-        console.log("newUser", newUser)
 
         return await this.userRepository.save(newUser);
     }

@@ -11,7 +11,7 @@ const transporter = nodemailer.createTransport({
 export class EmailService {
     async send({to, subject, text}) {
         await transporter.sendMail({
-            from: `"HackerNews Clone" <${process.env.EMAIL_USER}>`,
+            from: `"User management system" <${process.env.EMAIL_USER}>`,
             to,
             subject,
             text

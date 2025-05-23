@@ -5,14 +5,13 @@ import {PermissionSeeder} from "../../../core/application/seeders/PermissionSeed
 import {RoleSeeder} from "../../../core/application/seeders/RoleSeeder.js";
 import {SuperAdminSeeder} from "../../../core/application/seeders/SuperAdminSeeder.js";
 
-import {PermissionRepository} from "../../database/postgre/repository/PermissionRepository.js";
-import {RoleRepository} from "../../database/postgre/repository/RoleRepository.js";
-import {UserRepository} from "../../database/postgre/repository/UserRepository.js";
+import {PermissionRepository} from "../../database/postgre/repository/permission/PermissionRepository.js";
+import {RoleRepository} from "../../database/postgre/repository/role/RoleRepository.js";
+import {UserRepository} from "../../database/postgre/repository/user/UserRepository.js";
 
 import {BcryptPasswordHash} from "../../services/bcrypt/BcryptPasswordHasher.js";
 
 const run = async () => {
-    await dataSource.initialize()
     const queryRunner = dataSource.createQueryRunner();
     await queryRunner.connect();
 
@@ -43,11 +42,11 @@ const run = async () => {
             userRepository,
             passwordHasher,
             {
-                name: "Super",
-                surname: "Admin",
-                email: "superadmin@example.com",
-                phone_number: "000000000",
-                password: "Admin123",
+                name: process.env.NAME,
+                surname: process.env.SURNAME,
+                email: process.env.EMAIL,
+                phone_number: process.env.PHONE_NUMBER,
+                password: process.env.PASSWORD,
             },
             roleMap["super_admin"]
         );
